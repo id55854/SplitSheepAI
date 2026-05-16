@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
+import { countExtendedFingers, loadHandLandmarker } from "@/lib/mora/hand-detect";
 
 type Round = {
   playerFingers: number;
@@ -26,9 +27,20 @@ export function MoraGame() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [micOn, setMicOn] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
+  const [detectStatus, setDetectStatus] = useState<
+    "idle" | "loading" | "ready" | "error"
+  >("idle");
+  const [liveCount, setLiveCount] = useState<number | null>(null);
+  const [handSeen, setHandSeen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recogRef = useRef<any>(null);
+  const detectorRef = useRef<any>(null);
+  const detectRafRef = useRef<number | null>(null);
+  const stableRef = useRef<{ value: number | null; since: number }>({
+    value: null,
+    since: 0,
+  });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -59,13 +71,11 @@ export function MoraGame() {
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
+        video: { facingMode: "user", width: 640, height: 480 },
         audio: false,
       });
       streamRef.current = stream;
       setCameraOn(true);
-      // The <video> element is always in the DOM now — attach in next tick to
-      // be safe, then play. play() must run after srcObject is set.
       requestAnimationFrame(async () => {
         const v = videoRef.current;
         if (!v) return;
@@ -77,6 +87,7 @@ export function MoraGame() {
             "Browser je blokirao autoplay videa: " + (e?.message ?? e)
           );
         }
+        startDetector();
       });
     } catch (e: any) {
       const name = e?.name ?? "Error";
@@ -95,10 +106,73 @@ export function MoraGame() {
     }
   }
   function stopCamera() {
+    stopDetector();
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     if (videoRef.current) videoRef.current.srcObject = null;
     setCameraOn(false);
+    setLiveCount(null);
+    setHandSeen(false);
+  }
+
+  async function startDetector() {
+    if (detectorRef.current) return; // already running
+    setDetectStatus("loading");
+    try {
+      const lm = await loadHandLandmarker();
+      detectorRef.current = lm;
+      setDetectStatus("ready");
+      detectLoop();
+    } catch (e: any) {
+      setDetectStatus("error");
+      setCameraError(
+        (cameraError ?? "") +
+          " (Detekcija prstiju nije se učitala: " +
+          (e?.message ?? e) +
+          ")"
+      );
+    }
+  }
+  function stopDetector() {
+    if (detectRafRef.current !== null) {
+      cancelAnimationFrame(detectRafRef.current);
+      detectRafRef.current = null;
+    }
+  }
+
+  function detectLoop() {
+    const v = videoRef.current;
+    const lm = detectorRef.current;
+    if (!v || !lm) return;
+    if (v.readyState < 2) {
+      detectRafRef.current = requestAnimationFrame(detectLoop);
+      return;
+    }
+    try {
+      const ts = performance.now();
+      const result = lm.detectForVideo(v, ts);
+      const lms = result?.landmarks?.[0];
+      if (lms && lms.length === 21) {
+        const n = countExtendedFingers(lms);
+        setHandSeen(true);
+        setLiveCount(n);
+        // Stability: only push to React state if the value has held for ~250ms.
+        const s = stableRef.current;
+        if (s.value !== n) {
+          s.value = n;
+          s.since = ts;
+        } else if (ts - s.since > 250) {
+          setFingers(n);
+        }
+      } else {
+        setHandSeen(false);
+        setLiveCount(null);
+        stableRef.current = { value: null, since: 0 };
+      }
+    } catch {
+      // swallow per-frame errors
+    }
+    detectRafRef.current = requestAnimationFrame(detectLoop);
   }
 
   function startMic() {
@@ -239,9 +313,36 @@ export function MoraGame() {
                   Kamera nije uključena — koristi tipke <b className="mx-1">0–5</b> ispod.
                 </div>
               )}
+              {/* Detection overlay */}
+              {cameraOn && (
+                <>
+                  <div className="absolute top-2 left-2 px-2 py-1 rounded bg-black/50 text-white text-[11px]">
+                    {detectStatus === "loading" && "Učitavam model…"}
+                    {detectStatus === "ready" && (handSeen ? "Vidim ruku" : "Drži ruku u kadru")}
+                    {detectStatus === "error" && "Detekcija nije dostupna"}
+                    {detectStatus === "idle" && "—"}
+                  </div>
+                  {liveCount !== null && (
+                    <div className="absolute bottom-2 right-2 grid place-items-center">
+                      <div className="rounded-full bg-terracotta text-white font-serif text-3xl w-14 h-14 grid place-items-center shadow-lg">
+                        {liveCount}
+                      </div>
+                      <div className="text-[10px] text-white/90 mt-1 bg-black/40 px-1.5 rounded">
+                        detekcija
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
             {cameraError && (
               <div className="mt-2 text-xs text-terracotta">{cameraError}</div>
+            )}
+            {cameraOn && detectStatus === "ready" && (
+              <div className="mt-1 text-[11px] text-ink/60">
+                Detekcija prstiju radi · drži šaku 250 ms u istom položaju da
+                se vrijednost zaključa.
+              </div>
             )}
             <div className="mt-3">
               <div className="text-xs text-ink/60 mb-1">Prsti</div>

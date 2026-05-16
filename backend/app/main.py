@@ -86,6 +86,9 @@ async def _summary_for(
             wind_name=wx.get("wind_name", ""),
             water_class=water_class,
             crowd_label=crowd.label,
+            wind_kmh=wx.get("wind_speed_kmh"),
+            wind_dir_deg=wx.get("wind_direction_deg"),
+            exposure_deg=beach.exposure_deg,
         )
 
     return {

@@ -140,10 +140,23 @@ def headline(
     wind_name: str,
     water_class: str,
     crowd_label: str,
+    wind_kmh: float | None = None,
+    wind_dir_deg: float | None = None,
+    exposure_deg: float | None = None,
 ) -> str:
-    """One-line, plain-English summary suitable for a card header."""
+    """One-line, plain-English summary suitable for a card header.
+
+    When a named wind is blowing > 15 km/h, also says whether the beach is
+    sheltered from or exposed to it — the key per-beach insight today."""
     quality = water_class if water_class in ("excellent", "good") else f"{water_class} water"
-    bits = [f"{crowd_label.lower()}", f"{quality} water"]
+    bits = [crowd_label.lower(), f"{quality} water"]
     if wind_name and wind_name != "Calm":
-        bits.append(f"{wind_name.lower()} blowing")
+        wind_phrase = f"{wind_name.lower()} blowing"
+        if wind_kmh is not None and wind_kmh > 15 and wind_dir_deg is not None and exposure_deg is not None:
+            f = shelter_factor(wind_dir_deg, exposure_deg)
+            if f < 0.8:
+                wind_phrase = f"sheltered from {wind_name.lower()}"
+            elif f > 1.2:
+                wind_phrase = f"{wind_name.lower()} hits head-on"
+        bits.append(wind_phrase)
     return " · ".join(bits).capitalize()

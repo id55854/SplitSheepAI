@@ -14,6 +14,7 @@ const GAME_COLOR: Record<GameId, string> = {
   balote: "#2d6a3a",
   picigin: "#0e8db5",
   pljockanje: "#6b4d2a",
+  alka: "#8b1f1f",
 };
 
 const GAME_EMOJI: Record<GameId, string> = {
@@ -23,6 +24,7 @@ const GAME_EMOJI: Record<GameId, string> = {
   balote: "●",
   picigin: "◎",
   pljockanje: "▲",
+  alka: "♞",
 };
 
 type Props = {

@@ -40,6 +40,19 @@ export const seedScores: SeedScore[] = [
   { userId: "u_ante", userName: "Ante", gameId: "mora", points: 5, createdAt: hours(-200) },
   { userId: "u_jure", userName: "Jure", gameId: "briskula", points: 110, createdAt: hours(-150) },
   { userId: "u_mate", userName: "Mate", gameId: "briskula", points: 82, createdAt: hours(-300) },
+  // Trešeta
+  { userId: "u_marija", userName: "Marija", gameId: "treseta", points: 12, createdAt: hours(-4) },
+  { userId: "u_frane", userName: "Frane", gameId: "treseta", points: 9, createdAt: hours(-16) },
+  { userId: "u_ana", userName: "Ana", gameId: "treseta", points: 14, createdAt: hours(-48) },
+  { userId: "u_sime", userName: "Šime", gameId: "treseta", points: 7, createdAt: hours(-120) },
+  // Pljočkanje
+  { userId: "u_frane", userName: "Frane", gameId: "pljockanje", points: 18, createdAt: hours(-6) },
+  { userId: "u_mate", userName: "Mate", gameId: "pljockanje", points: 22, createdAt: hours(-29) },
+  { userId: "u_jure", userName: "Jure", gameId: "pljockanje", points: 14, createdAt: hours(-90) },
+  // Alka (single round = 0..12)
+  { userId: "u_ante", userName: "Ante", gameId: "alka", points: 9, createdAt: hours(-9) },
+  { userId: "u_iva", userName: "Iva", gameId: "alka", points: 7, createdAt: hours(-35) },
+  { userId: "u_mate", userName: "Mate", gameId: "alka", points: 11, createdAt: hours(-200) },
 ];
 
 // Real-ish coordinates around Split

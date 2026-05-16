@@ -4,25 +4,49 @@ const tiles = [
   {
     href: "/play/briskula",
     title: "Briškula vs Dida Frane",
-    sub: "Igraj odmah. Triestine karte, online.",
+    sub: "Triestine karte, briscola, štihovi.",
     accent: "bg-adriatic text-white",
+  },
+  {
+    href: "/play/treseta",
+    title: "Trešeta · Šjora Mare",
+    sub: "Prati boju, signali tučem · strišo.",
+    accent: "bg-adriaticDark text-white",
   },
   {
     href: "/mora",
     title: "Mora · multimodalna",
-    sub: "Pokaži prste, vikni broj. AI igra protiv tebe.",
+    sub: "Prste i glas. AI igra protiv tebe.",
     accent: "bg-terracotta text-white",
+  },
+  {
+    href: "/play/alka",
+    title: "Sinjska Alka",
+    sub: "UNESCO 2010. Tri trke, koplje u sridnju kunu.",
+    accent: "bg-white",
+  },
+  {
+    href: "/play/pljockanje",
+    title: "Pljočkanje",
+    sub: "RH 2016. Baci ploku što bliže leku.",
+    accent: "bg-white",
   },
   {
     href: "/events",
     title: "Događaji u Splitu",
-    sub: "Briškula večeri, picigin na Bačvicama, balote na Marjanu.",
+    sub: "Konobe, Bačvice, Marjan — uživo.",
     accent: "bg-white",
   },
   {
     href: "/leaderboard",
     title: "Ljestvica",
-    sub: "Po kvartu, po igri, po danu. Velim Varošu vs Lučac.",
+    sub: "Po kvartu, po igri, po danu.",
+    accent: "bg-white",
+  },
+  {
+    href: "/play",
+    title: "Sve igre",
+    sub: "Cijeli katalog: Tier 1–4.",
     accent: "bg-white",
   },
 ];

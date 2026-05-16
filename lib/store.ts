@@ -11,7 +11,14 @@ export type Kvart =
   | "Varoš"
   | "drugdi";
 
-export type GameId = "briskula" | "treseta" | "mora" | "pljockanje" | "balote" | "picigin";
+export type GameId =
+  | "briskula"
+  | "treseta"
+  | "mora"
+  | "pljockanje"
+  | "balote"
+  | "picigin"
+  | "alka";
 
 export type User = {
   id: string;

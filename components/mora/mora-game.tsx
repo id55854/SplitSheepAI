@@ -23,7 +23,9 @@ export function MoraGame() {
   const [commentary, setCommentary] = useState<string>("");
   const [throwing, setThrowing] = useState(false);
   const [cameraOn, setCameraOn] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const [micOn, setMicOn] = useState(false);
+  const [micError, setMicError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recogRef = useRef<any>(null);
@@ -43,50 +45,104 @@ export function MoraGame() {
   }, [fingers, called, throwing]);
 
   async function startCamera() {
+    setCameraError(null);
+    if (typeof window === "undefined") return;
+    if (!window.isSecureContext && window.location.hostname !== "localhost") {
+      setCameraError(
+        "Kamera radi samo preko HTTPS ili na localhostu. Otvori adresu kao localhost."
+      );
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraError("Ovaj preglednik nema getUserMedia.");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
         audio: false,
       });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
       setCameraOn(true);
-    } catch {
+      // The <video> element is always in the DOM now — attach in next tick to
+      // be safe, then play. play() must run after srcObject is set.
+      requestAnimationFrame(async () => {
+        const v = videoRef.current;
+        if (!v) return;
+        v.srcObject = stream;
+        try {
+          await v.play();
+        } catch (e: any) {
+          setCameraError(
+            "Browser je blokirao autoplay videa: " + (e?.message ?? e)
+          );
+        }
+      });
+    } catch (e: any) {
+      const name = e?.name ?? "Error";
+      const reason =
+        name === "NotAllowedError"
+          ? "Dozvola za kameru je odbijena. Klikni na ikonu kamere u adresnoj traci i daj dozvolu, pa ponovi."
+          : name === "NotFoundError"
+          ? "Nema dostupne kamere."
+          : name === "NotReadableError"
+          ? "Kameru već koristi drugi program (Teams, Zoom, OBS…)."
+          : name === "OverconstrainedError"
+          ? "Tražena kamera ne postoji (front-facing). Pokušaj ponovo."
+          : `${name}: ${e?.message ?? "nepoznato"}`;
+      setCameraError(reason);
       setCameraOn(false);
     }
   }
   function stopCamera() {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
+    if (videoRef.current) videoRef.current.srcObject = null;
     setCameraOn(false);
   }
 
   function startMic() {
+    setMicError(null);
     const SR =
       (window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition;
     if (!SR) {
+      setMicError(
+        "Ovaj preglednik nema Web Speech API. Probaj Chrome ili Edge."
+      );
       setMicOn(false);
       return;
     }
-    const r = new SR();
-    r.lang = "hr-HR";
-    r.continuous = true;
-    r.interimResults = true;
-    r.onresult = (ev: any) => {
-      for (let i = ev.resultIndex; i < ev.results.length; i++) {
-        const transcript = ev.results[i][0].transcript.toLowerCase();
-        const n = parseNumberWord(transcript);
-        if (n !== null) setCalled(n);
-      }
-    };
-    r.onerror = () => setMicOn(false);
-    r.start();
-    recogRef.current = r;
-    setMicOn(true);
+    if (!window.isSecureContext && window.location.hostname !== "localhost") {
+      setMicError(
+        "Mikrofon radi samo preko HTTPS ili na localhostu."
+      );
+      return;
+    }
+    try {
+      const r = new SR();
+      r.lang = "hr-HR";
+      r.continuous = true;
+      r.interimResults = true;
+      r.onresult = (ev: any) => {
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const transcript = ev.results[i][0].transcript.toLowerCase();
+          const n = parseNumberWord(transcript);
+          if (n !== null) setCalled(n);
+        }
+      };
+      r.onerror = (ev: any) => {
+        setMicError(`Greška mikrofona: ${ev?.error ?? "nepoznato"}`);
+        setMicOn(false);
+      };
+      r.onend = () => setMicOn(false);
+      r.start();
+      recogRef.current = r;
+      setMicOn(true);
+    } catch (e: any) {
+      setMicError(`Mikrofon nije se pokrenuo: ${e?.message ?? e}`);
+      setMicOn(false);
+    }
   }
   function stopMic() {
     try {
@@ -169,20 +225,24 @@ export function MoraGame() {
                 </button>
               )}
             </div>
-            <div className="aspect-video bg-ink/80 rounded grid place-items-center overflow-hidden">
-              {cameraOn ? (
-                <video
-                  ref={videoRef}
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover scale-x-[-1]"
-                />
-              ) : (
-                <div className="text-stone text-xs text-center px-4">
-                  Kamera ne radi — koristi tipke <b>0–5</b> ispod.
+            <div className="aspect-video bg-ink/80 rounded relative overflow-hidden">
+              <video
+                ref={videoRef}
+                muted
+                playsInline
+                autoPlay
+                className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
+                style={{ visibility: cameraOn ? "visible" : "hidden" }}
+              />
+              {!cameraOn && (
+                <div className="absolute inset-0 grid place-items-center text-stone text-xs text-center px-4">
+                  Kamera nije uključena — koristi tipke <b className="mx-1">0–5</b> ispod.
                 </div>
               )}
             </div>
+            {cameraError && (
+              <div className="mt-2 text-xs text-terracotta">{cameraError}</div>
+            )}
             <div className="mt-3">
               <div className="text-xs text-ink/60 mb-1">Prsti</div>
               <div className="flex gap-2 flex-wrap">
@@ -256,6 +316,9 @@ export function MoraGame() {
                 ))}
               </div>
             </div>
+            {micError && (
+              <div className="mt-2 text-xs text-terracotta">{micError}</div>
+            )}
           </div>
         </div>
 

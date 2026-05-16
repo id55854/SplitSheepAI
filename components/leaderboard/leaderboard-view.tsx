@@ -12,7 +12,7 @@ type Row = {
 };
 
 type Win = "day" | "week" | "month" | "all";
-type GameFilter = "all" | "briskula" | "mora";
+type GameFilter = "all" | "briskula" | "treseta" | "mora" | "pljockanje" | "alka";
 
 const WINS: { id: Win; label: string }[] = [
   { id: "day", label: "Danas" },
@@ -24,7 +24,10 @@ const WINS: { id: Win; label: string }[] = [
 const GAMES: { id: GameFilter; label: string }[] = [
   { id: "all", label: "Sve igre" },
   { id: "briskula", label: "Briškula" },
+  { id: "treseta", label: "Trešeta" },
   { id: "mora", label: "Mora" },
+  { id: "pljockanje", label: "Pljočkanje" },
+  { id: "alka", label: "Alka" },
 ];
 
 export function LeaderboardView() {

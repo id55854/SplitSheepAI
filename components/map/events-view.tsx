@@ -19,12 +19,14 @@ const GAMES: { id: "all" | GameId; label: string }[] = [
 export function EventsView({
   initialEvents,
   userId,
+  initialFilter = "all",
 }: {
   initialEvents: RivaEvent[];
   userId: string | null;
+  initialFilter?: "all" | GameId;
 }) {
   const [events, setEvents] = useState(initialEvents);
-  const [filter, setFilter] = useState<"all" | GameId>("all");
+  const [filter, setFilter] = useState<"all" | GameId>(initialFilter);
   const [selectedId, setSelectedId] = useState<string | null>(
     initialEvents[0]?.id ?? null
   );
@@ -188,5 +190,7 @@ function gameLabel(g: GameId): string {
       return "Picigin";
     case "pljockanje":
       return "Pljočkanje";
+    case "alka":
+      return "Alka";
   }
 }

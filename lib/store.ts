@@ -115,6 +115,24 @@ export const store = {
     s.users.set(u.id, u);
     return u;
   },
+  createGuestWithId(id: string, displayName: string, kvart?: Kvart | null): User {
+    seed();
+    const existing = s.users.get(id);
+    if (existing) {
+      existing.displayName = displayName;
+      if (kvart !== undefined) existing.kvart = kvart;
+      return existing;
+    }
+    const u: User = {
+      id,
+      displayName,
+      kvart: kvart ?? null,
+      isGuest: true,
+      createdAt: new Date().toISOString(),
+    };
+    s.users.set(id, u);
+    return u;
+  },
   getUser(id: string): User | undefined {
     seed();
     return s.users.get(id);

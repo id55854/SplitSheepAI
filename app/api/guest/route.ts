@@ -18,9 +18,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "bad_input" }, { status: 400 });
   }
   const { displayName, kvart } = parsed.data;
-  const user = store.createGuest(displayName, (kvart as Kvart | null) ?? null);
   const session = await getSession();
-  session.uid = user.id;
+  // Mint a stable uid the cookie carries from now on.
+  if (!session.uid) session.uid = store.newId();
+  session.displayName = displayName;
+  session.kvart = (kvart as Kvart | null) ?? null;
+  session.createdAt = session.createdAt ?? new Date().toISOString();
   await session.save();
-  return NextResponse.json({ ok: true, user });
+  // Best-effort: also seed an in-memory User entry on whichever instance
+  // handled this request so legacy lookups work. The cookie remains the
+  // source of truth.
+  store.createGuestWithId(session.uid, displayName, (kvart as Kvart | null) ?? null);
+  return NextResponse.json({
+    ok: true,
+    user: {
+      id: session.uid,
+      displayName,
+      kvart: kvart ?? null,
+      isGuest: true,
+      createdAt: session.createdAt,
+    },
+  });
 }

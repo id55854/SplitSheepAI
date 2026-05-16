@@ -12,7 +12,8 @@ tsconfig.tsbuildinfo
 /backend
 /frontend
 /render.yaml
-/vercel.json
 /SheepAI_Brainstorm.md
 /T3_BeachWorthGoing_Feasibility.md
 /SheepAI Challenge - Summer 2026.docx.pdf
+
+.vercel

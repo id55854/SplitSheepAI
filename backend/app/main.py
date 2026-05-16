@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
@@ -17,9 +18,11 @@ from .vision.crowd import CrowdEstimate, estimate_from_jpg
 
 app = FastAPI(title="Beach Worth Going · Split", version="0.1.0")
 
+_cors = os.getenv("CORS_ORIGINS", "*").strip()
+_origins: list[str] = ["*"] if _cors == "*" else [o.strip() for o in _cors.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

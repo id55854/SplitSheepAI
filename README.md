@@ -122,6 +122,37 @@ frontend/
 4. **Why now (60s)** — Croatia has the cleanest sea in Europe (99% excellent). The Ministry already publishes this. No tourist or local knows where to look. We made it actionable.
 5. **Path to v1 (60s)** — TZ Split partnership (overtourism is their stated KPI), B2B for beach clubs, premium alerts for residents.
 
+## Deploying
+
+The frontend goes on Vercel; the backend goes on Render (free tier).
+
+### Backend → Render (uses `render.yaml`)
+
+1. Sign in at https://render.com → New + → Blueprint.
+2. Connect this GitHub repo. Render detects `render.yaml` at the root and provisions
+   `bwg-backend` as a free Python web service (`rootDir: backend`, start command
+   `uvicorn app.main:app --host 0.0.0.0 --port $PORT`, healthcheck at `/api/health`).
+3. After the first deploy, copy the public URL (`https://bwg-backend.onrender.com`).
+4. Caveats: free tier cold-starts after 15 min idle (~30 s wake). Alerts persist
+   only until the next redeploy — for real persistence wire it to Render Postgres,
+   Supabase, or move to JSONL via S3.
+
+To tighten CORS to just your Vercel project, set `CORS_ORIGINS` in the Render
+dashboard to a comma-separated list (e.g. `https://bwg.vercel.app`).
+
+### Frontend → Vercel
+
+```powershell
+cd frontend
+npx vercel login            # one-time
+npx vercel                  # first deploy → links the project
+npx vercel --prod           # promote to production
+```
+
+When Vercel asks for environment variables, set `NEXT_PUBLIC_API_URL` to your
+Render backend URL (e.g. `https://bwg-backend.onrender.com`). The `lib/api.ts`
+default falls back to `http://127.0.0.1:8000` for local dev.
+
 ## What's stubbed vs live
 
 | Feature | Status |

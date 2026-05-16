@@ -1,0 +1,18 @@
+# Render blueprint — one-click backend deploy.
+# Connect the GitHub repo in Render dashboard, point to this branch,
+# Render reads this file and provisions a web service automatically.
+
+services:
+  - type: web
+    name: bwg-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: CORS_ORIGINS
+        value: "*"

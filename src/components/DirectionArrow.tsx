@@ -50,7 +50,6 @@ export default function DirectionArrow({ bearingDeg, language, hidden = false }:
         ↑
       </div>
       <div className="direction-label">{t(labelKey, language)}</div>
-      <p className="direction-hint">{t('arrowTowardGuard', language)}</p>
     </div>
   );
 }

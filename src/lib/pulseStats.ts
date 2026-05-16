@@ -6,7 +6,17 @@ import {
   getAllReportsForDashboard,
   getBontonViews,
   getInteractionCount,
+  getRedirectedVisitors,
+  getPressureSavedTotal,
 } from './storage';
+import {
+  bestAlternativeZone,
+  getAllPressures,
+  topPressuredZone,
+  type ZonePressure,
+} from './pressureModel';
+import { getZone } from '../data/zones';
+import { computeBreathingScore, getGuardianSummary } from './gamification';
 
 export type PulseStatus = 'Calm' | 'Busy' | 'Critical';
 
@@ -20,6 +30,18 @@ export interface PulseDashboardData {
   pulseStatus: PulseStatus;
   topBontonMessages: { rule: BontonRule; label: string; count: number }[];
   liveReportCount: number;
+  zonePressures: ZonePressure[];
+  topPressureZone: ZonePressure;
+  bestAlternative: ZonePressure;
+  redirectedVisitors: number;
+  pressureSavedAvg: number;
+  blockedPassageCount: number;
+  aiCityRecommendation: string;
+  breathingScore: number;
+  guardianPoints: number;
+  unlockedStoryCount: number;
+  bontonStreak: number;
+  cityAverageGP: number;
 }
 
 function countBy<T extends string>(items: T[]): Map<T, number> {
@@ -100,17 +122,87 @@ export function computePulseDashboard(language: Language = 'hr'): PulseDashboard
     .sort((a, b) => b.count - a.count)
     .slice(0, 4);
 
+  const zonePressures = getAllPressures();
+  const topPressureZone = topPressuredZone();
+  const bestAlt = bestAlternativeZone();
+  const redirectedVisitors = getRedirectedVisitors();
+  const pressureSavedTotal = getPressureSavedTotal();
+  const pressureSavedAvg = redirectedVisitors > 0
+    ? Math.round(pressureSavedTotal / redirectedVisitors)
+    : 0;
+  const blockedPassageCount = allReports.filter(r => r.type === 'blocked-passage').length;
+  const aiCityRecommendation = buildCityRecommendation(
+    topPressureZone,
+    bestAlt,
+    blockedPassageCount,
+    language,
+  );
+
+  const guardianSummary = getGuardianSummary();
+
   return {
     totalInteractions: interactions,
     totalReports: allReports.length,
     reportsByType,
     reportsByLandmark,
-    mostPressuredLocation: topLandmark?.name ?? 'Peristil',
+    mostPressuredLocation: topLandmark?.name ?? topPressureZone.zoneId,
     recommendedAction: buildRecommendation(topType, topLandmark?.name ?? null),
     pulseStatus,
     topBontonMessages,
     liveReportCount: liveReports.length,
+    zonePressures,
+    topPressureZone,
+    bestAlternative: bestAlt,
+    redirectedVisitors,
+    pressureSavedAvg,
+    blockedPassageCount,
+    aiCityRecommendation,
+    breathingScore: computeBreathingScore(),
+    guardianPoints: guardianSummary.guardianPoints,
+    unlockedStoryCount: guardianSummary.unlockedStoryCount,
+    bontonStreak: guardianSummary.bontonStreak,
+    cityAverageGP: 145, // Mock baseline for demo
   };
+}
+
+function buildCityRecommendation(
+  top: ZonePressure,
+  alt: ZonePressure,
+  blockedCount: number,
+  language: Language,
+): string {
+  const topName = getZone(top.zoneId).name;
+  const altName = getZone(alt.zoneId).name;
+
+  if (top.status === 'avoid-now') {
+    if (language === 'hr') {
+      return `Preusmjeri posjetitelje s ulaska na ${topName} prema ${altName} sljedećih 30 min. ${
+        blockedCount >= 2 ? `Dodatno: ${blockedCount} prijava blokiranog prolaza — pošalji marshala.` : ''
+      }`.trim();
+    }
+    if (language === 'riva') {
+      return `Pošalji turiste ša ${topName} na ${altName} idućih 30 min. ${
+        blockedCount >= 2 ? `Plus: ${blockedCount} prijava začepa — pošalji marshala.` : ''
+      }`.trim();
+    }
+    return `Redirect visitors entering ${topName} toward ${altName} for the next 30 minutes. ${
+      blockedCount >= 2 ? `Plus: ${blockedCount} blocked-passage reports — station a marshal.` : ''
+    }`.trim();
+  }
+
+  if (top.status === 'crowded') {
+    return language === 'hr'
+      ? `${topName} je na ${top.score}% — promoviraj ${altName} u sljedećoj smjeni.`
+      : language === 'riva'
+        ? `${topName} je na ${top.score}% — guraj ${altName} idući šihti.`
+        : `${topName} sitting at ${top.score}% pressure — promote ${altName} this shift.`;
+  }
+
+  return language === 'hr'
+    ? 'Stanje stabilno. Nastavi s civic education kroz Čuvara Palače.'
+    : language === 'riva'
+      ? 'Sve stabilno. Nastavi s edukacijom kroz Čuvara Palače.'
+      : 'Conditions stable. Continue civic education via the Palace Guard.';
 }
 
 export function subscribeToStorage(onChange: () => void): () => void {

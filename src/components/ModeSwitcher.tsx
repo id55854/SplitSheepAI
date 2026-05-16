@@ -3,7 +3,7 @@ import type { Language } from '../data/landmarks';
 const MODES: { lang: Language; label: string }[] = [
   { lang: 'en', label: 'English' },
   { lang: 'hr', label: 'Hrvatski' },
-  { lang: 'riva', label: 'Splitcki mode' },
+  { lang: 'riva', label: 'Splitski' },
 ];
 
 interface Props {

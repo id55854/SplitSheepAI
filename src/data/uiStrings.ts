@@ -2,14 +2,14 @@ import type { BontonRule, Language } from './landmarks';
 
 const strings = {
   startTitle: {
-    en: 'Palace Guard',
-    hr: 'Čuvar Palače',
-    riva: 'Čuvar Palače',
+    en: 'Guardians of Split',
+    hr: 'Čuvari Splita',
+    riva: 'Čuvari Splita',
   },
   startSubtitle: {
-    en: 'AI Roman guard through your camera — history, etiquette, and civic data for Split.',
-    hr: 'AI rimski čuvar kroz kameru — povijest, bonton i podaci za Grad Split.',
-    riva: 'AI čuvar kroz kameru — baza, bonton i podaci za Grad.',
+    en: 'Roman guards across the city — pick one and walk.',
+    hr: 'Rimski čuvari po cijelom gradu — biraj svog i kreni.',
+    riva: 'Rimski čuvari po cilon gradu — biraj svog i kreni.',
   },
   startQuote: {
     en: 'Our guide does not only show where to go — it teaches how to behave in a city that is someone\'s home, not a stage set.',
@@ -17,9 +17,9 @@ const strings = {
     riva: 'Naš vodič ne pokazuje samo gdje ići — uči te kako se ponašat u gradu koji je nečiji dom, ne kulisa.',
   },
   startButton: {
-    en: 'Launch Palace Guard',
-    hr: 'Pokreni čuvara palače',
-    riva: 'Pokreni čuvara palače',
+    en: 'Enter Split',
+    hr: 'Uđi u Split',
+    riva: 'Uđi u Split',
   },
   startHint: {
     en: 'QR-ready · Phone rear camera · Demo if no permission',
@@ -32,9 +32,9 @@ const strings = {
     riva: 'Turist gušta · Grad vidi podatke · Lokalci manje kaosa',
   },
   appBadge: {
-    en: 'Diocletian Go · Palace Guard',
-    hr: 'Diocletian Go · Čuvar Palače',
-    riva: 'Diocletian Go · Čuvar Palače',
+    en: 'Čuvari Splita',
+    hr: 'Čuvari Splita',
+    riva: 'Čuvari Splita',
   },
   demoLabel: {
     en: 'Demo',
@@ -215,6 +215,97 @@ const strings = {
     hr: 'Demo podaci + vaše prijave. Bez backenda — spremno za QR kod sutra ujutro.',
     riva: 'Demo podaci + vaše prijave. Bez backenda — QR sutra ujutro.',
   },
+
+  // Diocletian Flow — pressure + routing UI
+  pressureLabel: { en: 'Pressure', hr: 'Pritisak', riva: 'Pritisak' },
+  pressureTrendRising: { en: '↑ rising', hr: '↑ raste', riva: '↑ raste' },
+  pressureTrendFalling: { en: '↓ falling', hr: '↓ pada', riva: '↓ pada' },
+  pressureTrendStable: { en: '→ stable', hr: '→ stabilno', riva: '→ stabilno' },
+  routeCardHeading: {
+    en: 'Calmer route available',
+    hr: 'Mirnija ruta dostupna',
+    riva: 'Mirnija ruta na raspolaganju',
+  },
+  routeClassicLabel: { en: 'Classic', hr: 'Klasična', riva: 'Klasik' },
+  routeRecommendedTag: { en: 'recommended', hr: 'preporučeno', riva: 'preporuka' },
+  routeMinutesShort: { en: 'min', hr: 'min', riva: 'min' },
+  routeCrowdedShort: { en: 'crowded', hr: 'gužva', riva: 'gusto' },
+  routeTakeQuiet: {
+    en: 'Take the quiet route',
+    hr: 'Uzmi mirnu rutu',
+    riva: 'Idemo mirnijim',
+  },
+  routeStayClassic: {
+    en: 'Stay on classic',
+    hr: 'Ostani na klasičnoj',
+    riva: 'Ostani na klasici',
+  },
+  routeWhyButton: { en: 'Why?', hr: 'Zašto?', riva: 'Zač?' },
+  routeWhyTitle: {
+    en: 'Why this route',
+    hr: 'Zašto ova ruta',
+    riva: 'Zašto baš ova',
+  },
+  routeBenefitTime: {
+    en: 'Extra minutes',
+    hr: 'Dodatne minute',
+    riva: 'Dodatnih minuta',
+  },
+  routeBenefitPressure: {
+    en: 'Pressure saved',
+    hr: 'Manje pritiska',
+    riva: 'Manje gužve',
+  },
+  hiddenStoryBadge: { en: 'Hidden story', hr: 'Skrivena priča', riva: 'Skrivena priča' },
+  zonePillCalm: { en: 'All clear', hr: 'Sve mirno', riva: 'Sve mirno' },
+  redirectArrowHint: {
+    en: 'Going around the crowd',
+    hr: 'Vodim te oko gužve',
+    riva: 'Vodim te oko mečka',
+  },
+  // Dashboard upgrade
+  dashTopPressure: { en: 'Top pressure', hr: 'Najveći pritisak', riva: 'Najveći pritisak' },
+  dashBestAlt: { en: 'Best alternative', hr: 'Najbolja alternativa', riva: 'Najbolja alternativa' },
+  dashRedirected: { en: 'Visitors redirected', hr: 'Preusmjereni posjetitelji', riva: 'Preusmjereni gosti' },
+  dashPressureReduced: { en: 'Pressure reduced', hr: 'Smanjen pritisak', riva: 'Manje pritiska' },
+  dashBlockedReports: { en: 'Blocked passages', hr: 'Blokirani prolazi', riva: 'Blokirani prolazi' },
+  dashZoneHeatmap: { en: 'Zone pressure right now', hr: 'Pritisak zona upravo sada', riva: 'Pritisak zona sad' },
+  dashAICityTitle: { en: 'AI city recommendation', hr: 'AI preporuka gradu', riva: 'AI preporuka Gradu' },
+  dashDemoSeed: { en: 'Force demo peak', hr: 'Forsiraj demo peak', riva: 'Forsiraj demo peak' },
+  dashDemoClear: { en: 'Clear demo override', hr: 'Očisti demo override', riva: 'Očisti override' },
+  // Soldier reward toast
+  rewardToastTitle: { en: 'Pressure shaved', hr: 'Pritisak skinut', riva: 'Pritisak skinut' },
+
+  // Map screen + landmark sheet
+  mapSubtitle: {
+    en: 'Pick a guard. Walk Split.',
+    hr: 'Izaberi čuvara. Hodaj Splitom.',
+    riva: 'Biraj čuvara. Krećen u Split.',
+  },
+  greenGuideHint: {
+    en: 'Calm spots — walk here',
+    hr: 'Mirno — kreni ovamo',
+    riva: 'Mirno — kreni ovamo',
+  },
+  breathingLabel: { en: 'Palace breathing', hr: 'Palača diše', riva: 'Palača diše' },
+  breathingHint: {
+    en: 'Rises when visitors take calmer routes',
+    hr: 'Raste kad turisti biraju mirnije rute',
+    riva: 'Raste kad ljudi biraju mirnije',
+  },
+  openCameraBtn: { en: 'Open Camera View', hr: 'Otvori kameru', riva: 'Otvori kameru' },
+  calmerRouteBtn: { en: 'Choose calmer route', hr: 'Mirnija ruta', riva: 'Idemo mirnijim' },
+  backToMapBtn: { en: '← Map', hr: '← Mapa', riva: '← Mapa' },
+  guardianPointsLabel: { en: 'Guardian Points', hr: 'Guardian bodovi', riva: 'Guardian bodovi' },
+
+  // Reward modal
+  rewardHeadline: { en: 'You helped the Palace breathe', hr: 'Pomogao si palači disati', riva: 'Pomoga si palači disat' },
+  rewardPointsLine: { en: 'Guardian Points', hr: 'Guardian bodovi', riva: 'Guardian bodovi' },
+  rewardStoryUnlocked: { en: 'Hidden story unlocked', hr: 'Otključana skrivena priča', riva: 'Otključana skrivena priča' },
+  rewardBreathingDelta: { en: 'Palace breathing', hr: 'Palača diše', riva: 'Palača diše' },
+  rewardReadStory: { en: 'Read the hidden story', hr: 'Pročitaj skrivenu priču', riva: 'Pročitaj skrivenu priču' },
+  rewardDismiss: { en: 'Continue', hr: 'Dalje', riva: 'Dalje' },
+  hiddenStoryTitle: { en: 'Hidden story', hr: 'Skrivena priča', riva: 'Skrivena priča' },
 } as const;
 
 export const bontonLabels: Record<BontonRule, Record<Language, string>> = {

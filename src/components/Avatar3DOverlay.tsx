@@ -69,7 +69,7 @@ const Avatar3DOverlay = forwardRef<Avatar3DOverlayHandle, Props>(function Avatar
   const [bubbleAnchor, setBubbleAnchor] = useState<AvatarScreenAnchor>(HIDDEN_ANCHOR);
   const bubbleAnchorRef = useRef<AvatarScreenAnchor>(HIDDEN_ANCHOR);
   const [compassPending, setCompassPending] = useState(needsOrientationPermission());
-  const [hint, setHint] = useState<'compass' | 'turn' | 'hidden'>('compass');
+  const [, setHint] = useState<'compass' | 'turn' | 'hidden'>('compass');
   const directionRef = useRef(direction);
   const dragYawRef = useRef(0);
 
@@ -280,9 +280,6 @@ const Avatar3DOverlay = forwardRef<Avatar3DOverlayHandle, Props>(function Avatar
         <button type="button" className="ar-hud-btn" onClick={() => void requestOrientation()}>
           {t('compassEnable3d', language)}
         </button>
-      )}
-      {hint === 'turn' && (
-        <p className="ar-hud-hint">{t('anchorHint', language)}</p>
       )}
     </div>
   );

@@ -1,0 +1,19 @@
+{
+  "name": "Diocletian Go: Čuvar Palače",
+  "short_name": "Čuvar Palače",
+  "description": "AI rimski vodič i civic-tech alat za Dioklecijanovu palaču u Splitu.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a0e04",
+  "theme_color": "#1a0e04",
+  "lang": "hr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

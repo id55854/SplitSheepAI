@@ -196,11 +196,7 @@ export default function App() {
 
   if (appState === 'start') {
     return (
-      <StartScreen
-        language={language}
-        onLanguageChange={setLanguage}
-        onStart={handleStart}
-      />
+      <StartScreen language={language} onStart={handleStart} />
     );
   }
 

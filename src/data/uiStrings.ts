@@ -18,8 +18,8 @@ const strings = {
   },
   startButton: {
     en: 'Launch Palace Guard',
-    hr: 'Pokreni Čuvara Palače',
-    riva: 'Pokreni Čuvara Palače',
+    hr: 'Pokreni čuvara palače',
+    riva: 'Pokreni čuvara palače',
   },
   startHint: {
     en: 'QR-ready · Phone rear camera · Demo if no permission',

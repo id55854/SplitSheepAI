@@ -1,0 +1,18 @@
+node_modules
+.next
+out
+.env
+.env.local
+.vercel
+*.log
+.DS_Store
+tsconfig.tsbuildinfo
+
+# leftover from beach branch — not part of this branch
+/backend
+/frontend
+/render.yaml
+/vercel.json
+/SheepAI_Brainstorm.md
+/T3_BeachWorthGoing_Feasibility.md
+/SheepAI Challenge - Summer 2026.docx.pdf

@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: linear-gradient(180deg, #f7efd9 0%, #f4ead5 30%, #e8dec5 100%);
+  color: #1b1b1b;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+.serif {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+.pill {
+  @apply inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-sm border border-stone shadow-sm;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-md bg-adriatic px-4 py-2 text-white font-medium shadow-sm hover:bg-adriaticDark transition disabled:opacity-50;
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-md border border-adriatic/30 bg-white/70 px-4 py-2 text-adriatic font-medium hover:bg-white transition;
+}
+
+.btn-terra {
+  @apply inline-flex items-center justify-center gap-2 rounded-md bg-terracotta px-4 py-2 text-white font-medium shadow-sm hover:opacity-90 transition;
+}
+
+.card-surface {
+  @apply rounded-xl bg-white/85 border border-stone shadow-card backdrop-blur;
+}

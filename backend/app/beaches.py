@@ -19,6 +19,13 @@ class Beach:
     webcam_url: Optional[str] = None  # WhatsUpCams snapshot JPG, if available
     webcam_label: Optional[str] = None  # short note ("under renovation 2025-26")
     vibe: tuple[str, ...] = ()  # filter tags: family, quiet, party, shaded, snorkel, sandy, pebble
+    # exposure_deg = compass bearing the beach OPENS TO (away from land, into the sea).
+    # Used to compute wind shelter: onshore wind from the same bearing is worst,
+    # offshore wind from the opposite bearing is best.
+    exposure_deg: int = 180
+    # popularity: 1 (always empty) ... 5 (always packed). Modulates the time-of-day
+    # crowd heuristic when a live YOLO headcount isn't available.
+    popularity: int = 3
 
 
 BEACHES: tuple[Beach, ...] = (
@@ -31,6 +38,7 @@ BEACHES: tuple[Beach, ...] = (
         webcam_url="https://cdn.whatsupcams.com/snapshot/hr_splitbacvice01.jpg",
         webcam_label="Bačvice main entrance",
         vibe=("sandy", "family", "party", "central"),
+        exposure_deg=180, popularity=5,
     ),
     Beach(
         slug="bacvice-zapad",
@@ -39,6 +47,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50060,
         lng=16.44607,
         vibe=("sandy", "family", "central"),
+        exposure_deg=180, popularity=4,
     ),
     Beach(
         slug="bacvice-istok",
@@ -47,6 +56,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50081,
         lng=16.44925,
         vibe=("sandy", "central"),
+        exposure_deg=180, popularity=4,
     ),
     Beach(
         slug="firule",
@@ -55,6 +65,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50029,
         lng=16.45353,
         vibe=("family", "quiet", "pebble"),
+        exposure_deg=170, popularity=3,
     ),
     Beach(
         slug="hotel-split",
@@ -63,6 +74,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50150,
         lng=16.47063,
         vibe=("pebble", "quiet"),
+        exposure_deg=180, popularity=3,
     ),
     Beach(
         slug="znjan-zapad",
@@ -73,6 +85,7 @@ BEACHES: tuple[Beach, ...] = (
         webcam_url="https://cdn.whatsupcams.com/snapshot/hr_buildznjan01.jpg",
         webcam_label="Žnjan park renovation in progress 2025–26",
         vibe=("pebble", "renovation"),
+        exposure_deg=170, popularity=1,
     ),
     Beach(
         slug="znjan-istok",
@@ -83,6 +96,7 @@ BEACHES: tuple[Beach, ...] = (
         webcam_url="https://cdn.whatsupcams.com/snapshot/hr_buildznjan02.jpg",
         webcam_label="Žnjan east — view towards Hotel Lav",
         vibe=("pebble", "renovation"),
+        exposure_deg=170, popularity=1,
     ),
     Beach(
         slug="znjan-fanat",
@@ -91,6 +105,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50202,
         lng=16.47863,
         vibe=("pebble", "hotel"),
+        exposure_deg=170, popularity=3,
     ),
     Beach(
         slug="trstenik-radosevac",
@@ -99,6 +114,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50163,
         lng=16.46633,
         vibe=("pebble", "quiet"),
+        exposure_deg=150, popularity=3,
     ),
     Beach(
         slug="duilovo",
@@ -107,6 +123,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50140,
         lng=16.49399,
         vibe=("pebble", "quiet", "east"),
+        exposure_deg=180, popularity=2,
     ),
     Beach(
         slug="gusar",
@@ -115,6 +132,8 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.51646,
         lng=16.42533,
         vibe=("pebble", "rowing-club", "north"),
+        # Tucked into the Kaštela Bay shore — Marjan north flank, faces NW into the bay
+        exposure_deg=315, popularity=2,
     ),
     Beach(
         slug="bene",
@@ -123,6 +142,8 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.51438,
         lng=16.40127,
         vibe=("pebble", "shaded", "quiet", "marjan"),
+        # North side of Marjan, faces the Kaštela channel
+        exposure_deg=30, popularity=3,
     ),
     Beach(
         slug="kasjuni",
@@ -133,6 +154,8 @@ BEACHES: tuple[Beach, ...] = (
         webcam_url="https://cdn.whatsupcams.com/snapshot/hr_split05.jpg",
         webcam_label="Marjan / Kašjuni",
         vibe=("pebble", "marjan", "sunset"),
+        # South-west tip of Marjan, faces SSW toward Čiovo
+        exposure_deg=210, popularity=4,
     ),
     Beach(
         slug="uvala-kasjuni",
@@ -141,6 +164,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50535,
         lng=16.40024,
         vibe=("pebble", "quiet", "marjan"),
+        exposure_deg=210, popularity=2,
     ),
     Beach(
         slug="jezinac",
@@ -149,6 +173,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50354,
         lng=16.41731,
         vibe=("pebble", "shaded", "quiet", "marjan"),
+        exposure_deg=190, popularity=2,
     ),
     Beach(
         slug="zvoncac",
@@ -157,6 +182,7 @@ BEACHES: tuple[Beach, ...] = (
         lat=43.50276,
         lng=16.42136,
         vibe=("pebble", "quiet"),
+        exposure_deg=190, popularity=3,
     ),
 )
 

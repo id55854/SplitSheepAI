@@ -55,22 +55,27 @@ def _try_load_yolo():
     return _yolo_model
 
 
-def _heuristic_score(now: datetime | None = None) -> float:
-    """Time-of-day proxy for crowd. Used when YOLO isn't available."""
+def _heuristic_score(now: datetime | None = None, popularity: int = 3) -> float:
+    """Time-of-day proxy for crowd, scaled by each beach's popularity (1-5).
+    Returned score is on a 0-10 scale where 10 = packed."""
     if now is None:
         now = datetime.now(_TZ)
     h = now.hour + now.minute / 60.0
     if h < 7:
-        return 0.5
-    if h < 10:
-        return 2.5
-    if h < 12:
-        return 5.0
-    if h < 17:
-        return 8.0  # peak
-    if h < 20:
-        return 5.5
-    return 1.5
+        base = 0.5
+    elif h < 10:
+        base = 2.5
+    elif h < 12:
+        base = 5.0
+    elif h < 17:
+        base = 8.0  # peak
+    elif h < 20:
+        base = 5.5
+    else:
+        base = 1.5
+    # popularity ∈ [1, 5] scales base by 0.4 to 1.4 — quiet beaches stay quieter even at peak.
+    pop_factor = 0.4 + 0.25 * (max(1, min(5, popularity)) - 1)
+    return min(10.0, base * pop_factor)
 
 
 def estimate_from_jpg(
@@ -78,6 +83,7 @@ def estimate_from_jpg(
     *,
     is_renovation: bool = False,
     capacity_hint: int = 80,
+    popularity: int = 3,
 ) -> CrowdEstimate:
     """Single entry point. `capacity_hint` = headcount that should map to score 10."""
     if is_renovation:
@@ -89,23 +95,23 @@ def estimate_from_jpg(
             note="Beach under renovation; live cam shows construction work.",
         )
     if jpg_bytes is None:
-        score = _heuristic_score()
+        score = _heuristic_score(popularity=popularity)
         return CrowdEstimate(
             score=score,
             label=_label_for(score),
             people_count=None,
             method="heuristic",
-            note="No webcam snapshot available — using time-of-day proxy.",
+            note="No webcam snapshot available — using time-of-day + popularity proxy.",
         )
     model = _try_load_yolo()
     if model is None:
-        score = _heuristic_score()
+        score = _heuristic_score(popularity=popularity)
         return CrowdEstimate(
             score=score,
             label=_label_for(score),
             people_count=None,
             method="heuristic",
-            note="Vision model unavailable on this host — using time-of-day proxy.",
+            note="Vision model unavailable on this host — using time-of-day + popularity proxy.",
         )
     try:
         import numpy as np  # type: ignore
@@ -124,7 +130,7 @@ def estimate_from_jpg(
             method="yolo",
         )
     except Exception as exc:
-        score = _heuristic_score()
+        score = _heuristic_score(popularity=popularity)
         return CrowdEstimate(
             score=score,
             label=_label_for(score),

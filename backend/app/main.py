@@ -40,7 +40,9 @@ async def _crowd_for(beach: Beach) -> CrowdEstimate:
         jpg = await webcams.fetch_snapshot(beach.webcam_url)
     elif beach.webcam_url and is_renovation:
         jpg = None  # don't bother fetching; we mark closed
-    return estimate_from_jpg(jpg, is_renovation=is_renovation)
+    return estimate_from_jpg(
+        jpg, is_renovation=is_renovation, popularity=beach.popularity
+    )
 
 
 async def _summary_for(
@@ -70,6 +72,8 @@ async def _summary_for(
         air_temp_c=wx.get("air_temp_c"),
         wind_kmh=wx.get("wind_speed_kmh"),
         wave_m=mar.get("wave_height_m"),
+        wind_dir_deg=wx.get("wind_direction_deg"),
+        exposure_deg=beach.exposure_deg,
     )
 
     is_closed = crowd.method == "renovation"
